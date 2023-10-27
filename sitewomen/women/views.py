@@ -56,7 +56,7 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
+    posts = Women.published.filter(cat_id=category.pk).select_related("cat")
 
     data = {
         'title': f'Рубрика: {category.name}',
@@ -67,19 +67,20 @@ def show_category(request, cat_slug):
     return render(request, 'women/index.html', context=data)
 
 
-def show_tag_postlist(request, tag_slug):
-    tag=get_object_or_404(TagPost,slug=tag_slug)
-    posts=tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related('cat')
-    data={
-        'title':f'Тэг:{tag.tag}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected':None,
-    }
-    return render(request,'women/index.html', context=data)
-
-
-
-
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+
+    data = {
+        'title': f"Тег: {tag.tag}",
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': None,
+    }
+
+    return render(request, 'women/index.html', context=data)
+
