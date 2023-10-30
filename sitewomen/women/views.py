@@ -4,13 +4,15 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from .models import Women, Category, TagPost
+
+from .forms import AddPostForm, UploadFileForm
+from .models import Women, Category, TagPost, UploadFiles
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
         {'title': "Обратная связь", 'url_name': 'contact'},
         {'title': "Войти", 'url_name': 'login'}
-]
+        ]
 
 
 def index(request):
@@ -24,9 +26,20 @@ def index(request):
     }
     return render(request, 'women/index.html', context=data)
 
+# def handle_uploaded_file(f):
+#     with open(f"uploads/{f.name}", "wb+") as destination:
+#         for chunk in f.chunks():
+#             destination.write(chunk)
 
 def about(request):
-    return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu})
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            fp=UploadFiles(file=form.cleaned_data['file_upl'])
+            fp.save()
+    else:
+        form=UploadFileForm()
+    return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu, 'form':form})
 
 
 def show_post(request, post_slug):
@@ -43,7 +56,24 @@ def show_post(request, post_slug):
 
 
 def addpage(request):
-    return render(request, 'women/addpage.html',{'menu':menu, 'title': "Добавление статьи"})
+    if request.method == "POST":
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            # try:
+            #     Women.objects.create(**form.cleaned_data)
+            #     return redirect('home')
+            # except:
+            #     form.add_error(None, "Ошибка добавления поста")
+            form.save()
+            return redirect('home')
+    else:
+        form = AddPostForm()
+    data = {
+        'menu': menu,
+        'title': 'Добавление статьи',
+        'form': form
+    }
+    return render(request, 'women/addpage.html', data)
 
 
 def contact(request):
@@ -83,4 +113,3 @@ def show_tag_postlist(request, tag_slug):
     }
 
     return render(request, 'women/index.html', context=data)
-
