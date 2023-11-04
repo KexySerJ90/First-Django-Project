@@ -5,4 +5,23 @@
  
 <p >Вы успешно зарегистрировались на сайте! Для входа в систему необходимо авторизоваться по этой <a href="{% url 'users:login' %}">ссылке</a>
 </p>
+
+<p>Вы будете перенаправлены на страницу авторизации через <span id="countdown">5</span> секунд.</p>
+
+<script>
+var countdownElement = document.getElementById('countdown');
+var countdown = 5;
+
+var countdownInterval = setInterval(function() {
+  countdown--;
+  countdownElement.textContent = countdown;
+
+  if (countdown <= 0) {
+    clearInterval(countdownInterval);
+    window.location.href = "{% url 'users:login' %}";
+  }
+}, 1000);
+</script>
+
+
 {% endblock %}

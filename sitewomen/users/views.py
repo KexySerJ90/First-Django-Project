@@ -1,8 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, TemplateView
+
 from users.forms import LoginUserForm, RegisterUserForm
 
 
@@ -14,16 +18,17 @@ class LoginUser(LoginView):
     # def get_success_url(self):
     #     return reverse_lazy('home')
 
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name ='users/register.html'
+    extra_context = {"title":"Регистрация"}
 
-def register(request):
-    if request.method=="POST":
-        form = RegisterUserForm(request.POST)
-        if form.is_valid():
-            user=form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            return render(request, "users/register_done.html")
-    else:
-        form=RegisterUserForm()
-    return render(request, 'users/register.html', {'form':form})
+    def form_valid(self, form):
+        # сохраняем данные пользователя
+        self.object = form.save()
+        # перенаправляем на страницу "register_done.html"
+        return render(self.request, "users/register_done.html")
+
+
+
 
