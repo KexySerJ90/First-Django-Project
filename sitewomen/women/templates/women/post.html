@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block breadcrumbs %}
+
 <!-- Теги -->
 {% with post.tags.all as tags %}
 {% if tags %}
@@ -22,4 +23,8 @@
 {% endif %}
 
 {{post.content|linebreaks}}
+{% if perms.women.change_women %}
+<button onclick="window.location='{% url 'edit_page' post.slug %}'">Редактировать статью</button>
+<button onclick="window.location='{% url 'delete_page' post.slug %}'">Удалить статью</button>
+{% endif %}
 {% endblock %}

@@ -1,5 +1,5 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -57,30 +57,26 @@ class AddPage(LoginRequiredMixin,DataMixin, CreateView):
         return super().form_valid(form)
 
 
-class UpdatePage(DataMixin, UpdateView):
-    model = Women
+class UpdatePage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, UpdateView):
+    model=Women
     fields = ['title', 'content', 'photo', 'is_published', 'cat']
     template_name = 'women/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
+    permission_required = "women.change_women" #<приложение>.<действие>_<таблица>
 
 
-# class DeletePage(DeleteView):
-#     model = Women
-#     template_name = 'women/addpage.html'
-#     success_url = reverse_lazy('home')
-#     extra_context = {
-#         # 'menu': menu,
-#         'title': 'Удаление статьи',
-#     }
+class DeletePage(LoginRequiredMixin, DataMixin,DeleteView):
+    model = Women
+    template_name = 'women/addpage.html'
+    success_url = reverse_lazy('home')
+    title_page= 'Удаление статьи'
 
-
+@permission_required(perm='women.add_women', raise_exception=True)
 def contact(request):
     return HttpResponse("Обратная связь")
 
 
-def login(request):
-    return HttpResponse("Авторизация")
 
 
 class WomenCategory(DataMixin, ListView):

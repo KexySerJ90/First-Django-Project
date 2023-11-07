@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'women.apps.WomenConfig',
     'users',   #'users.apps.UsersConfig', можно так
     "debug_toolbar",
+    "social_django"
 ]
 
 MIDDLEWARE = [
@@ -142,13 +143,14 @@ LOGOUT_REDIRECT_URL='users:login'
 LOGIN_URL='users:login'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST_PASSWORD=
+EMAIL_HOST_PASSWORD="nubxvowsxpgswpxy"
 EMAIL_HOST = "smtp.yandex.ru"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "djangoserj90@yandex.ru"
@@ -157,3 +159,6 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
+
+AUTH_USER_MODEL='users.User'
+DEFAULT_USER_IMAGE=MEDIA_URL+'users/default.png'
