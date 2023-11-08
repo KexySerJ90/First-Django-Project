@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ywt^i-jce1cq%5q4s^p0130-h9x9vdmvmge-vf8g+htkga+=71
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'sitewomen.ru']
 INTERNAL_IPS = ["127.0.0.1"]
 
 
@@ -143,6 +143,7 @@ LOGOUT_REDIRECT_URL='users:login'
 LOGIN_URL='users:login'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.vk.VKOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
@@ -162,3 +163,25 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 
 AUTH_USER_MODEL='users.User'
 DEFAULT_USER_IMAGE=MEDIA_URL+'users/default.png'
+
+SOCIAL_AUTH_GITHUB_KEY = 'ccf79be2e2311f312a2e'
+SOCIAL_AUTH_GITHUB_SECRET = '7a4aea04f47598e3992827f0bf5d413c0654cc38'
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = '51788901'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'BwOeSnJ3wlwq6w9zuVsC'
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'users.pipeline.new_users_handler',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+TIME_ZONE = 'Europe/Moscow'

@@ -51,7 +51,7 @@ class RegisterUserForm(UserCreationForm):
 
 class ProfileUserForm(forms.ModelForm):
     username = forms.CharField(disabled=True, label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
-    email = forms.CharField(disabled=True, label='E-mail', widget=forms.TextInput(attrs={'class': 'form-input'}))
+    email = forms.CharField(disabled=True, required=False, label='E-mail', widget=forms.TextInput(attrs={'class': 'form-input'}))
     this_year=datetime.date.today().year
     date_birth=forms.DateTimeField(label="Дата рождения",widget=forms.SelectDateWidget(years=tuple(range(this_year-100,this_year-5))))
 
@@ -67,6 +67,7 @@ class ProfileUserForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-input'}),
             'last_name': forms.TextInput(attrs={'class': 'form-input'}),
         }
+
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
