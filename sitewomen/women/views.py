@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -8,7 +9,9 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
-from .forms import AddPostForm, UploadFileForm
+
+from sitewomen import settings
+from .forms import AddPostForm, UploadFileForm, ContactForm
 from .models import Women, Category, TagPost, UploadFiles
 from .utils import DataMixin
 
@@ -72,9 +75,24 @@ class DeletePage(LoginRequiredMixin, DataMixin,DeleteView):
     success_url = reverse_lazy('home')
     title_page= 'Удаление статьи'
 
-@permission_required(perm='women.add_women', raise_exception=True)
-def contact(request):
-    return HttpResponse("Обратная связь")
+
+class ContactFormView(LoginRequiredMixin, DataMixin, FormView):
+    form_class = ContactForm
+    template_name = 'women/contact.html'
+    success_url = reverse_lazy('home')
+    title_page = "Обратная связь"
+
+    def form_valid(self, form):
+        message = f"{form.cleaned_data['content']}.Будьте любезны ответить на E-mail {form.cleaned_data['email']}"
+        send_mail(
+            form.cleaned_data['name'],
+            message,
+            settings.EMAIL_HOST_USER,
+            [settings.EMAIL_HOST_USER],
+            fail_silently=False,
+        )
+        return super().form_valid(form)
+
 
 
 
